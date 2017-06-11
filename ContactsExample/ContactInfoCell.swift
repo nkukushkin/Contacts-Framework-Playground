@@ -43,27 +43,10 @@ extension ContactInfoCell {
     }
 
     private func updateNameLabel(with contact: CNContact) {
-
-        func formatterPersonName(for contact: CNContact) -> String? {
-            var personNameComponents = PersonNameComponents()
-            personNameComponents.namePrefix = contact.namePrefix
-            personNameComponents.givenName = contact.givenName
-            personNameComponents.middleName = contact.middleName
-            personNameComponents.familyName = contact.familyName
-            personNameComponents.nameSuffix = contact.nameSuffix
-
-            let personName = PersonNameComponentsFormatter()
-                .string(from: personNameComponents)
-
-            return personName.isEmpty ? nil : personName
-        }
-
-        if let personName = formatterPersonName(for: contact) {
+        if let personName = CNContactFormatter.string(from: contact, style: .fullName) {
             nameLabel.text = personName
         } else {
             nameLabel.text = contact.organizationName
         }
     }
-
-
 }

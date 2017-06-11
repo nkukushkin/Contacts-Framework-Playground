@@ -9,8 +9,6 @@
 import Contacts
 import ContactsUI
 
-let phoneNumberPropertyKey = "phoneNumbers" // see CNContact for other properties
-
 class ContactsViewController: UITableViewController {
 
     fileprivate var selectedProperties: [CNContactProperty] = [] {
@@ -21,21 +19,23 @@ class ContactsViewController: UITableViewController {
 
     @IBAction private func chooseButtonTapped(_ sender: UIBarButtonItem) {
         let contactPicker = CNContactPickerViewController()
+        contactPicker.delegate = self
 
         // Show contacts that have at least 1 phone number
         contactPicker.predicateForEnablingContact = NSPredicate(
-            format: "\(phoneNumberPropertyKey).@count > 0"
-        )
-        // Show only phone numbers in a contact card
-        contactPicker.displayedPropertyKeys = [
-            phoneNumberPropertyKey
-        ]
-        // Return phone number property when tapped
-        contactPicker.predicateForSelectionOfProperty = NSPredicate(
-            format: "key == '\(phoneNumberPropertyKey)'"
+            format: "\(CNContactPhoneNumbersKey).@count > 0"
         )
 
-        contactPicker.delegate = self
+        // Show only phone numbers in a contact card
+        contactPicker.displayedPropertyKeys = [
+            CNContactPhoneNumbersKey
+        ]
+
+        // Return phone number property when tapped
+        contactPicker.predicateForSelectionOfProperty = NSPredicate(
+            format: "key == '\(CNContactPhoneNumbersKey)'"
+        )
+
         present(contactPicker, animated: true)
     }
 }
@@ -44,13 +44,13 @@ class ContactsViewController: UITableViewController {
 extension ContactsViewController: CNContactPickerDelegate {
 
     func contactPicker(_ picker: CNContactPickerViewController, didSelect contactProperty: CNContactProperty) {
-        guard contactProperty.key == phoneNumberPropertyKey else { return }
+        guard contactProperty.key == CNContactPhoneNumbersKey else { return }
 
         selectedProperties = [contactProperty]
     }
 }
 
-// MARK: UITableViewDelegate
+// MARK: - UITableViewDelegate
 
 extension ContactsViewController {
 
